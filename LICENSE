@@ -1,6 +1,23 @@
-MIT License
+##############################################################################################################
+#                                                                                                             #
+#                                    SWAYUM - Open Source                                                     #
+#                                                                                                             #
+#   © Devyansh Rastogi (@computerauditor)                                                                     #
+#                                                                                                             #
+#   This is an open source script that provides a graphical user interface for capturing mouse positions      #
+#   and performing various actions. It allows users to record mouse clicks, right-clicks, and text input      #
+#   & other keyboard inputs at specific positions on the screen.                                              #
+#                                                                                                             #
+#   GitHub Repository: [Link to your GitHub repository]                                                       #
+#                                                                                                             #
+#   License:                                                                                                  #
+#   The script is released under the MIT License, granting you the freedom to use, modify, and distribute     #
+#   the software while providing proper attribution to Devyansh Rastogi (@computerauditor).                   #
+#                                                                                                             #
+#   Note: Please refer to the LICENSE file included with this script for the full terms of the MIT License.   #
+#                                                                                                             #
+##############################################################################################################
 
-Copyright (c) 2023 Dev(ComputerAuditor)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
