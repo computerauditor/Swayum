@@ -1,9 +1,8 @@
 #© Devyansh Rastogi (@computerauditor)
 import pyautogui
 import tkinter as tk
-from tkinter import messagebox
-from tkinter import simpledialog, filedialog
-
+from tkinter import messagebox, simpledialog, filedialog
+from tkinter import ttk
 
 class MouseCaptureGUI:
     def __init__(self):
@@ -40,6 +39,12 @@ class MouseCaptureGUI:
         self.preview_button.pack()
         self.preview_button.config(state=tk.DISABLED)
 
+        self.duration_label = tk.Label(self.root, text="Mouse Speed :", fg="yellow", bg="black")
+        self.duration_label.pack()
+
+        self.duration_slider = ttk.Scale(self.root, from_=0, to=10, orient=tk.HORIZONTAL)
+        self.duration_slider.pack()
+
         self.positions = []
 
         self.root.bind('<Control-i>', self.capture_position)
@@ -66,72 +71,34 @@ class MouseCaptureGUI:
 
     def capture_position(self, event):
         x, y = pyautogui.position()
-        action = self.show_action_dialog()
-        if action == "Text":
-            text = self.enter_text(x, y)
-            self.positions.append((x, y, action, text))
-            print(f"Position captured: ({x}, {y}), Action: {action}, Text: {text}")
-        else:
-            self.positions.append((x, y, action))
-            print(f"Position captured: ({x}, {y}), Action: {action}")
-        self.show_red_dot(x, y)  # Display red dot at the captured position
+        self.show_action_dialog(x, y)
 
-    def execute_positions(self):
-        for position in self.positions:
-            x, y, action, *extra = position
-            if action == "Single Click":
-                pyautogui.click(x, y)
-            elif action == "Right Click":
-                pyautogui.rightClick(x, y)
-            elif action == "Double Click":
-                pyautogui.doubleClick(x, y)
-            elif action == "Text":
-                text = extra[0]
-                pyautogui.moveTo(x, y)
-                pyautogui.typewrite(text)
-            print(f"Performed {action} at: ({x}, {y})")
-
-    def show_red_dot(self, x, y):
-        dot_size = 10
-        dot_color = "red"
-
-        dot_window = tk.Toplevel(self.root)
-        dot_window.overrideredirect(True)  # Remove window decorations
-        dot_window.attributes("-topmost", True)  # Ensure the dot is on top
-        dot_window.attributes("-transparentcolor", dot_color)  # Make the background transparent
-        dot_window.configure(bg="black")
-
-        dot_canvas = tk.Canvas(dot_window, width=dot_size, height=dot_size, highlightthickness=0, bg="black")
-        dot_canvas.pack()
-
-        dot_canvas.create_oval(0, 0, dot_size, dot_size, fill=dot_color)
-        dot_window.geometry(f"+{x - dot_size // 2}+{y - dot_size // 2}")  # Position the dot at the captured position
-
-        # Close the dot window after a delay
-        dot_window.after(1000, dot_window.destroy)
-
-    def show_action_dialog(self):
+    def show_action_dialog(self, x, y):
         action = None
 
         def select_action_single_click():
             nonlocal action
             action = "Single Click"
             dialog_window.destroy()
+            self.capture_action(x, y, action)
 
         def select_action_right_click():
             nonlocal action
             action = "Right Click"
             dialog_window.destroy()
+            self.capture_action(x, y, action)
 
         def select_action_double_click():
             nonlocal action
             action = "Double Click"
             dialog_window.destroy()
+            self.capture_action(x, y, action)
 
         def select_action_text():
             nonlocal action
             action = "Text"
             dialog_window.destroy()
+            self.capture_action(x, y, action)
 
         dialog_window = tk.Toplevel(self.root)
         dialog_window.title("Select Action")
@@ -153,15 +120,59 @@ class MouseCaptureGUI:
                                 fg="yellow", bg="black")
         text_button.pack(pady=10)
 
-        dialog_window.wait_window(dialog_window)
-        return action
+        dialog_window.geometry(f"+{x}+{y}")  # Position the dialog at the captured position
+
+    def capture_action(self, x, y, action):
+        if action == "Text":
+            text = self.enter_text(x, y)
+            self.positions.append((x, y, action, text))
+            print(f"Position captured: ({x}, {y}), Action: {action}, Text: {text}")
+        else:
+            self.positions.append((x, y, action))
+            print(f"Position captured: ({x}, {y}), Action: {action}")
+        self.show_red_dot(x, y)  # Display red dot at the captured position
 
     def enter_text(self, x, y):
         text = simpledialog.askstring("Enter Text", "Please enter the text:")
         return text
 
+    def execute_positions(self):
+        duration = self.duration_slider.get()
+        for position in self.positions:
+            x, y, action, *extra = position
+            if action == "Single Click":
+                pyautogui.click(x, y, duration=duration)
+            elif action == "Right Click":
+                pyautogui.rightClick(x, y, duration=duration)
+            elif action == "Double Click":
+                pyautogui.doubleClick(x, y, duration=duration)
+            elif action == "Text":
+                text = extra[0]
+                pyautogui.moveTo(x, y, duration=duration)
+                pyautogui.typewrite(text, duration=duration)
+            print(f"Performed {action} at: ({x}, {y})")
+
+    def show_red_dot(self, x, y):
+        dot_size = 10
+        dot_color = "red"
+
+        dot_window = tk.Toplevel(self.root)
+        dot_window.overrideredirect(True)  # Remove window decorations
+        dot_window.attributes("-topmost", True)  # Ensure the dot is on top
+        dot_window.attributes("-transparentcolor", dot_color)  # Make the background transparent
+        dot_window.configure(bg="black")
+
+        dot_canvas = tk.Canvas(dot_window, width=dot_size, height=dot_size, highlightthickness=0, bg="black")
+        dot_canvas.pack()
+
+        dot_canvas.create_oval(0, 0, dot_size, dot_size, fill=dot_color)
+        dot_window.geometry(f"+{x - dot_size // 2}+{y - dot_size // 2}")  # Position the dot at the captured position
+
+        # Close the dot window after a delay
+        dot_window.after(1000, dot_window.destroy)
+
     def save_positions(self):
-        filename = tk.filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text Files", "*.txt")])
+        filename = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text Files", "*.txt")])
         if filename:
             with open(filename, "w") as file:
                 for position in self.positions:
@@ -208,7 +219,6 @@ class MouseCaptureGUI:
             canvas.create_text(x + 10, y, text=str(i + 1), fill="white", anchor="w")
 
         preview_window.mainloop()
-
 
 if __name__ == '__main__':
     gui = MouseCaptureGUI()
