@@ -9,6 +9,9 @@ Swayum is an open-source Python script which provides a user-friendly graphical 
 3. Save and load captured positions for future
 4. Preview captured positions on a graphical canvas
 5. Intuitive interface with start/stop capturing buttons and action selection dialog
+   
+<img width="960" alt="capture" src="https://github.com/computerauditor/Swayum/assets/117805200/92eae0d5-5278-4a4c-b502-5cf16852c6b7">
+    * Updated Swayum GUI *
 
 # Instructions/How to use
 
